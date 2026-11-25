@@ -147,6 +147,24 @@ footer p{font-size:11.5px;letter-spacing:.1em;color:#5c6263}
 .fx{opacity:0;transform:translateY(26px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
 .fx.in{opacity:1;transform:none}
 
+/* ---------- game modal ---------- */
+.modal{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;background:rgba(4,6,7,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);opacity:0;visibility:hidden;transition:opacity .32s var(--ease),visibility .32s}
+.modal.on{opacity:1;visibility:visible}
+.modal-in{position:relative;display:flex;flex-direction:column;width:100vw;height:100dvh;background:#0a0d0e;border:1px solid rgba(183,255,60,.22);overflow:hidden;transform:translateY(16px);transition:transform .36s var(--ease)}
+.modal.on .modal-in{transform:none}
+.modal-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 12px 10px 20px;border-bottom:1px solid rgba(255,255,255,.1);background:linear-gradient(90deg,rgba(183,255,60,.09),rgba(40,246,229,.035))}
+.modal-t{font-size:12px;letter-spacing:.14em;color:#cfd6c9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.modal-x{display:grid;place-items:center;width:40px;height:40px;flex:0 0 auto;color:#e8efe0;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:10px;cursor:pointer;transition:background .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease),box-shadow .25s var(--ease),transform .25s var(--ease)}
+.modal-x:hover{background:var(--lime);color:#080a0b;border-color:var(--lime);box-shadow:0 0 24px rgba(183,255,60,.65);transform:rotate(90deg)}
+.modal-x svg{width:17px;height:17px}
+.modal-body{flex:1;min-height:0;background:#000}
+.modal-body iframe{display:block;width:100%;height:100%;border:0}
+body.modal-open{overflow:hidden}
+@media(min-width:901px){
+  .modal{padding:28px}
+  .modal-in{width:min(1200px,100%);height:min(88vh,940px);border-radius:16px;box-shadow:0 44px 130px rgba(0,0,0,.75)}
+}
+
 @media(max-width:900px){
   .shell{padding:96px 0}
   .hero{padding-bottom:70px}
@@ -224,9 +242,9 @@ HOW TO PLAY</p>
     <h2 class="fx" style="margin-bottom:46px">はじめかたは、4ステップ。</h2>
     <div class="steps fx">
       <div><p class="sn">01</p><h3>えらぶ</h3><p>一覧から気になったゲームをタップします。</p></div>
-      <div><p class="sn">02</p><h3>ひらく</h3><p>そのままブラウザで起動します。ダウンロードはありません。</p></div>
+      <div><p class="sn">02</p><h3>ひらく</h3><p>その場でポップアップが開きます。ページは移動しません。</p></div>
       <div><p class="sn">03</p><h3>あそぶ</h3><p>タップでもキーボードでも遊べます。</p></div>
-      <div><p class="sn">04</p><h3>もどる</h3><p>ブラウザを戻れば、またこのページに。</p></div>
+      <div><p class="sn">04</p><h3>もどる</h3><p>×で閉じれば、またこのページに戻ります。</p></div>
     </div>
   </div>
 </section>
@@ -262,6 +280,16 @@ START</p>
   </div>
 </footer>
 
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="ゲームプレイヤー" aria-hidden="true">
+  <div class="modal-in">
+    <div class="modal-bar">
+      <span class="modal-t" data-modal-title>GAME</span>
+      <button class="modal-x" type="button" aria-label="閉じる" data-modal-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="modal-body"><iframe title="ゲームプレイヤー" allow="fullscreen;autoplay;gamepad;clipboard-write" allowfullscreen data-modal-frame></iframe></div>
+  </div>
+</div>
+
 <script>
 var GAMES=[
 {n:'ブロック崩し',m:'全10ステージ',g:'ACTION',u:'https://hhoshizora-usagi.github.io/blockkuzusi/'},
@@ -284,9 +312,36 @@ var GL={ACTION:'Action',PUZZLE:'Puzzle',TABLE:'Table',SPORTS:'Sports',RHYTHM:'Rh
 var ICON='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.2"/><path d="M12 3.8v16.4M3.8 12h16.4"/></svg>';
 function pad(i){return (i<9?'0':'')+i}
 
+/* ---------- game modal ---------- */
+var modalEl=document.getElementById('modal');
+var modalFrame=modalEl.querySelector('[data-modal-frame]');
+var modalTitle=modalEl.querySelector('[data-modal-title]');
+function openGame(name,url){
+  modalTitle.textContent=name;
+  modalFrame.src=url;
+  modalEl.classList.add('on');
+  modalEl.setAttribute('aria-hidden','false');
+  document.body.classList.add('modal-open');
+}
+function closeGame(){
+  if(!modalEl.classList.contains('on'))return;
+  modalEl.classList.remove('on');
+  modalEl.setAttribute('aria-hidden','true');
+  document.body.classList.remove('modal-open');
+  setTimeout(function(){modalFrame.src='about:blank'},380);
+}
+document.addEventListener('click',function(e){
+  var a=e.target.closest('a[data-game]');
+  if(a){e.preventDefault();openGame(a.getAttribute('data-name'),a.getAttribute('data-game'));return}
+  if(e.target.closest('[data-modal-close]')||e.target===modalEl)closeGame();
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')closeGame();
+});
+
 /* marquee */
 var track=document.getElementById('track');
-function tileHTML(g,i){return '<a class="tile g-'+g.g+'" href="'+g.u+'" target="_blank" rel="noopener"><span class="hue"></span><span class="tn">'+g.n+'</span><span class="tg">'+pad(i+1)+' · '+GL[g.g]+'</span></a>'}
+function tileHTML(g,i){return '<a class="tile g-'+g.g+'" href="'+g.u+'" target="_blank" rel="noopener" data-game="'+g.u+'" data-name="'+g.n+'"><span class="hue"></span><span class="tn">'+g.n+'</span><span class="tg">'+pad(i+1)+' · '+GL[g.g]+'</span></a>'}
 var seq=GAMES.map(tileHTML).join('');
 track.innerHTML=seq+seq;
 
@@ -296,6 +351,7 @@ GAMES.forEach(function(g,i){
   var a=document.createElement('a');
   a.className='card';a.href=g.u;a.target='_blank';a.rel='noopener';
   a.dataset.g=g.g;a.dataset.new=g.x?'1':'0';
+  a.dataset.game=g.u;a.dataset.name=g.n;
   a.innerHTML='<div class="row"><span class="ico">'+ICON+'</span><span class="n">'+pad(i+1)+'</span></div><div class="nm">'+g.n+'</div><div class="mt">'+GL[g.g]+(g.x?'<span class="nb">New</span>':'')+'</div><span class="go">→</span>';
   grid.appendChild(a);
 });
@@ -321,19 +377,19 @@ function threeDistinct(){
 }
 function renderRecs(){
   recs.innerHTML=threeDistinct().map(function(g,k){
-    return '<a class="rec g-'+g.g+'" href="'+g.u+'" target="_blank" rel="noopener"><span class="hue"></span><span class="no">Pick 0'+(k+1)+'</span><span class="rn">'+g.n+'</span><span class="rm">'+GL[g.g]+' · '+g.m+'</span><span class="ar">あそぶ →</span></a>';
+    return '<a class="rec g-'+g.g+'" href="'+g.u+'" target="_blank" rel="noopener" data-game="'+g.u+'" data-name="'+g.n+'"><span class="hue"></span><span class="no">Pick 0'+(k+1)+'</span><span class="rn">'+g.n+'</span><span class="rm">'+GL[g.g]+' · '+g.m+'</span><span class="ar">あそぶ →</span></a>';
   }).join('');
 }
 renderRecs();
 document.getElementById('shuffle').addEventListener('click',renderRecs);
 
 function pickRandom(){return GAMES[Math.floor(Math.random()*GAMES.length)]}
-document.getElementById('lucky').addEventListener('click',function(e){e.preventDefault();window.open(pickRandom().u,'_blank')});
+document.getElementById('lucky').addEventListener('click',function(e){e.preventDefault();var g=pickRandom();openGame(g.n,g.u)});
 
 var gbox=document.getElementById('genres');
 Object.keys(GL).forEach(function(k){
   var d=document.createElement('div');
-  d.innerHTML='<h3>'+GL[k]+'</h3><ul>'+GAMES.filter(function(g){return g.g===k}).map(function(g){return '<li><a href="'+g.u+'" target="_blank" rel="noopener">'+g.n+'</a></li>'}).join('')+'</ul>';
+  d.innerHTML='<h3>'+GL[k]+'</h3><ul>'+GAMES.filter(function(g){return g.g===k}).map(function(g){return '<li><a href="'+g.u+'" target="_blank" rel="noopener" data-game="'+g.u+'" data-name="'+g.n+'">'+g.n+'</a></li>'}).join('')+'</ul>';
   gbox.appendChild(d);
 });
 

@@ -42,12 +42,8 @@ h2{font-size:23px;font-weight:300;line-height:1.25;letter-spacing:.01em}
 /* hero */
 .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;padding-bottom:90px;overflow:hidden}
 .scenes{position:absolute;inset:0;z-index:0}
-.sc{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;animation:sc 28s infinite;transform:scale(1.04)}
-.sc:nth-child(1){background-image:url('https://enzine.co.jp/room/wp-content/themes/enzine-room/assets/hero-scene-01.webp');animation-delay:0s}
-.sc:nth-child(2){background-image:url('https://enzine.co.jp/room/wp-content/themes/enzine-room/assets/hero-scene-02.webp');animation-delay:7s}
-.sc:nth-child(3){background-image:url('https://enzine.co.jp/room/wp-content/themes/enzine-room/assets/hero-scene-03.webp');animation-delay:14s}
-.sc:nth-child(4){background-image:url('https://enzine.co.jp/room/wp-content/themes/enzine-room/assets/hero-scene-04-idol-v2.webp');animation-delay:21s}
-@keyframes sc{0%{opacity:0;transform:scale(1.04)}5%{opacity:1}25%{opacity:1;transform:scale(1.1)}30%{opacity:0;transform:scale(1.1)}100%{opacity:0}}
+.sc{position:absolute;inset:0;background-size:cover;background-position:center;background-image:url('hero.png');transform:scale(1.04);animation:ken 32s ease-in-out infinite alternate;will-change:transform}
+@keyframes ken{0%{transform:scale(1.04) translate3d(0,0,0)}100%{transform:scale(1.17) translate3d(-1.6%,-1.4%,0)}}
 .veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(8,10,11,.82) 0%,rgba(8,10,11,.42) 40%,rgba(8,10,11,.9) 100%),radial-gradient(80% 60% at 20% 90%,rgba(183,255,60,.12),transparent 60%)}
 .hero-inner{position:relative;z-index:2;width:100%}
 .hero .eyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#c6cbc8;margin-bottom:22px}
@@ -170,7 +166,7 @@ footer p{font-size:11.5px;letter-spacing:.1em;color:#5c6263}
 <main>
 
 <section class="hero" id="top">
-  <div class="scenes"><div class="sc"></div><div class="sc"></div><div class="sc"></div><div class="sc"></div></div>
+  <div class="scenes"><div class="sc"></div></div>
   <div class="veil"></div>
   <div class="inner hero-inner">
     <p class="eyebrow">enzine room — Chiba</p>

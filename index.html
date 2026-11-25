@@ -154,12 +154,20 @@ footer p{font-size:11.5px;letter-spacing:.1em;color:#5c6263}
 .modal.on .modal-in{transform:none}
 .modal-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 12px 10px 20px;border-bottom:1px solid rgba(255,255,255,.1);background:linear-gradient(90deg,rgba(183,255,60,.09),rgba(40,246,229,.035))}
 .modal-t{font-size:12px;letter-spacing:.14em;color:#cfd6c9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.modal-acts{display:flex;align-items:center;gap:8px;flex:0 0 auto}
 .modal-x{display:grid;place-items:center;width:40px;height:40px;flex:0 0 auto;color:#e8efe0;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:10px;cursor:pointer;transition:background .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease),box-shadow .25s var(--ease),transform .25s var(--ease)}
-.modal-x:hover{background:var(--lime);color:#080a0b;border-color:var(--lime);box-shadow:0 0 24px rgba(183,255,60,.65);transform:rotate(90deg)}
+.modal-x:hover{background:var(--lime);color:#080a0b;border-color:var(--lime);box-shadow:0 0 24px rgba(183,255,60,.65)}
+.modal-x[data-modal-close]:hover{transform:rotate(90deg)}
+.modal-x[data-modal-full]:hover{transform:scale(1.08)}
 .modal-x svg{width:17px;height:17px}
+.modal-x [data-fs-off]{display:none}
+.modal-x.fs [data-fs-on]{display:none}
+.modal-x.fs [data-fs-off]{display:block}
 .modal-body{flex:1;min-height:0;background:#000}
 .modal-body iframe{display:block;width:100%;height:100%;border:0}
 body.modal-open{overflow:hidden}
+.modal:fullscreen,.modal:-webkit-full-screen{padding:0;background:#000;backdrop-filter:none;-webkit-backdrop-filter:none}
+.modal:fullscreen .modal-in,.modal:-webkit-full-screen .modal-in{width:100%;height:100%;border-radius:0;border:none;box-shadow:none}
 @media(min-width:901px){
   .modal{padding:28px}
   .modal-in{width:min(1200px,100%);height:min(88vh,940px);border-radius:16px;box-shadow:0 44px 130px rgba(0,0,0,.75)}
@@ -243,7 +251,7 @@ HOW TO PLAY</p>
     <div class="steps fx">
       <div><p class="sn">01</p><h3>えらぶ</h3><p>一覧から気になったゲームをタップします。</p></div>
       <div><p class="sn">02</p><h3>ひらく</h3><p>その場でポップアップが開きます。ページは移動しません。</p></div>
-      <div><p class="sn">03</p><h3>あそぶ</h3><p>タップでもキーボードでも遊べます。</p></div>
+      <div><p class="sn">03</p><h3>あそぶ</h3><p>タップでもキーボードでも遊べます。大きくしたい時は拡大ボタンで。</p></div>
       <div><p class="sn">04</p><h3>もどる</h3><p>×で閉じれば、またこのページに戻ります。</p></div>
     </div>
   </div>
@@ -284,7 +292,10 @@ START</p>
   <div class="modal-in">
     <div class="modal-bar">
       <span class="modal-t" data-modal-title>GAME</span>
-      <button class="modal-x" type="button" aria-label="閉じる" data-modal-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      <span class="modal-acts">
+        <button class="modal-x" type="button" aria-label="全画面で表示" data-modal-full><svg viewBox="0 0 24 24" aria-hidden="true"><path data-fs-on d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path data-fs-off d="M4 9h5V4M20 9h-5V4M20 15h-5v5M4 15h5v5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="modal-x" type="button" aria-label="閉じる" data-modal-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </span>
     </div>
     <div class="modal-body"><iframe title="ゲームプレイヤー" allow="fullscreen;autoplay;gamepad;clipboard-write" allowfullscreen data-modal-frame></iframe></div>
   </div>
@@ -316,6 +327,25 @@ function pad(i){return (i<9?'0':'')+i}
 var modalEl=document.getElementById('modal');
 var modalFrame=modalEl.querySelector('[data-modal-frame]');
 var modalTitle=modalEl.querySelector('[data-modal-title]');
+var modalFull=modalEl.querySelector('[data-modal-full]');
+function isFull(){
+  return !!(document.fullscreenElement||document.webkitFullscreenElement)
+}
+function toggleFull(){
+  var d=document;
+  if(isFull()){
+    (d.exitFullscreen||d.webkitExitFullscreen||function(){}).call(d);
+  }else{
+    (modalEl.requestFullscreen||modalEl.webkitRequestFullscreen||function(){}).call(modalEl);
+  }
+}
+function syncFull(){
+  var on=isFull();
+  modalFull.classList.toggle('fs',on);
+  modalFull.setAttribute('aria-label',on?'全画面を解除':'全画面で表示');
+}
+document.addEventListener('fullscreenchange',syncFull);
+document.addEventListener('webkitfullscreenchange',syncFull);
 function openGame(name,url){
   modalTitle.textContent=name;
   modalFrame.src=url;
@@ -325,6 +355,7 @@ function openGame(name,url){
 }
 function closeGame(){
   if(!modalEl.classList.contains('on'))return;
+  if(isFull()){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}
   modalEl.classList.remove('on');
   modalEl.setAttribute('aria-hidden','true');
   document.body.classList.remove('modal-open');
@@ -333,10 +364,13 @@ function closeGame(){
 document.addEventListener('click',function(e){
   var a=e.target.closest('a[data-game]');
   if(a){e.preventDefault();openGame(a.getAttribute('data-name'),a.getAttribute('data-game'));return}
+  if(e.target.closest('[data-modal-full]')){toggleFull();return}
   if(e.target.closest('[data-modal-close]')||e.target===modalEl)closeGame();
 });
 document.addEventListener('keydown',function(e){
-  if(e.key==='Escape')closeGame();
+  if(e.key!=='Escape')return;
+  if(isFull())return;
+  closeGame();
 });
 
 /* marquee */

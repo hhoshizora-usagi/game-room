@@ -34,7 +34,10 @@ svg{display:block}
 main{position:relative;z-index:1}
 .inner{max-width:1026px;margin:0 auto;padding:0 24px}
 .shell{padding:150px 0}
-.code{font-size:16px;font-weight:400;letter-spacing:.4px;opacity:.25;line-height:1.6;margin-bottom:34px;white-space:pre-line}
+.code{position:relative;display:inline-block;font-size:11px;letter-spacing:.3em;line-height:2;text-transform:uppercase;color:#aee96f;margin-bottom:24px;white-space:pre-line;padding:9px 22px;border:1px solid rgba(183,255,60,.24);border-radius:8px;background:linear-gradient(120deg,rgba(183,255,60,.1),rgba(40,246,229,.035));overflow:hidden}
+.code:before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--lime);box-shadow:0 0 16px var(--lime)}
+.code:after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 32%,rgba(183,255,60,.3) 50%,transparent 68%);transform:translateX(-130%);animation:sheen 7s ease-in-out infinite;pointer-events:none}
+@keyframes sheen{0%,55%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
 h2{font-size:23px;font-weight:300;line-height:1.25;letter-spacing:.01em}
 .display{font-weight:300;line-height:.83;letter-spacing:.035em;font-stretch:105%;text-transform:uppercase;font-size:clamp(40px,7.4vw,63px)}
 .display.lc{text-transform:none;letter-spacing:.015em}
@@ -46,7 +49,8 @@ h2{font-size:23px;font-weight:300;line-height:1.25;letter-spacing:.01em}
 @keyframes ken{0%{transform:scale(1.04) translate3d(0,0,0)}100%{transform:scale(1.17) translate3d(-1.6%,-1.4%,0)}}
 .veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(8,10,11,.82) 0%,rgba(8,10,11,.42) 40%,rgba(8,10,11,.9) 100%),radial-gradient(80% 60% at 20% 90%,rgba(183,255,60,.12),transparent 60%)}
 .hero-inner{position:relative;z-index:2;width:100%}
-.hero .eyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#c6cbc8;margin-bottom:22px}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.26em;color:#ccd1ce;margin-bottom:22px;padding:8px 17px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(8,10,11,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.hero .eyebrow:before{content:"";width:5px;height:5px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime);flex:0 0 auto}
 .hero h1{margin-bottom:26px;text-shadow:0 0 60px rgba(0,0,0,.6)}
 .hero h1 .ac{background:linear-gradient(96deg,var(--lime),var(--cyan) 55%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
 .lede{max-width:430px;font-size:14px;line-height:2.05;color:#cfd4d1;margin-bottom:34px}
@@ -59,14 +63,17 @@ h2{font-size:23px;font-weight:300;line-height:1.25;letter-spacing:.01em}
 .scrollhint{position:absolute;bottom:26px;right:24px;z-index:2;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#8b9190}
 
 /* marquee */
-.marquee{position:relative;z-index:2;overflow:hidden;padding:26px 0;border-top:.8px solid var(--line);border-bottom:.8px solid var(--line);background:rgba(8,10,11,.9);-webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.marquee{position:relative;z-index:2;overflow:hidden;padding:30px 0;border-top:.8px solid rgba(183,255,60,.26);border-bottom:.8px solid rgba(183,255,60,.26);background:linear-gradient(180deg,rgba(11,14,15,.98),rgba(8,10,11,.92));-webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.marquee:before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 4px)}
 .track{display:flex;gap:14px;width:max-content;animation:mv 70s linear infinite}
 .marquee:hover .track{animation-play-state:paused}
 @keyframes mv{to{transform:translateX(-50%)}}
-.tile{flex:0 0 auto;width:236px;height:148px;border-radius:14px;border:1px solid var(--line);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:16px 18px;background:linear-gradient(160deg,#161a1c,#0a0c0d);transition:border-color .4s var(--ease),transform .4s var(--ease)}
-.tile:hover{border-color:rgba(183,255,60,.5);transform:translateY(-3px)}
+.tile{flex:0 0 auto;width:236px;height:148px;border-radius:14px;border:1px solid var(--line);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:16px 18px;background:linear-gradient(160deg,#161a1c,#0a0c0d);transition:border-color .4s var(--ease),transform .4s var(--ease),box-shadow .4s var(--ease)}
+.tile:after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 36%,rgba(255,255,255,.2) 50%,transparent 64%);transform:translateX(-140%);transition:transform .85s var(--ease);pointer-events:none}
+.tile:hover{border-color:rgba(183,255,60,.55);transform:translateY(-4px);box-shadow:0 20px 44px -22px rgba(183,255,60,.6)}
+.tile:hover:after{transform:translateX(140%)}
 .tile .hue{position:absolute;inset:0;opacity:.45;transition:opacity .4s var(--ease)}
-.tile:hover .hue{opacity:.72}
+.tile:hover .hue{opacity:.78}
 .tile .hue:after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:26px 26px;mask-image:radial-gradient(80% 80% at 70% 20%,#000,transparent)}
 .tile .tn{position:relative;font-size:13.5px;font-weight:500;line-height:1.5;text-shadow:0 2px 14px rgba(0,0,0,.7)}
 .tile .tg{position:relative;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#b9bfbc;margin-top:4px}
